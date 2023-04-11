@@ -10,8 +10,8 @@ df = pd.read_csv('plataformas.csv')
 
 # Directorio 
 @app.get("/")
-async def presentacion():
-    return "¡Hola! ¿Cuál es tu consulta? :)"
+def index():
+    return {"message":"¡Hola! ¿Cuál es tu consulta? :)"}
 
 @app.get("/contacto")
 def contacto():
@@ -22,7 +22,7 @@ def menu():
     return ("Funciones de mi API: (1) get_max_duration (2) get_score_count (3) get_count_platform (4) get_actor (5) No disponible (6) get_contents")
 
 # Query 1
-@app.get("/get_max_duration/")
+@app.get("/get_max_duration/{year}/{platform}/{duration_type}")
 def get_max_duration(year:int,platform:str,duration_type:str):
     if platform == 'amazon':
         filtro = df[(df['type'] == 'movie') & (df['release_year'] == year) & (df['duration_type'] == duration_type) &(df['id'].str.startswith('a'))]
@@ -36,7 +36,8 @@ def get_max_duration(year:int,platform:str,duration_type:str):
         return ('Algo salió mal. Por favor intente nuevamente :)')
     
     title_max = filtro[filtro['duration_int'] == (filtro['duration_int'].max())]
-    return title_max.iloc[0,2]
+    respuesta = title_max.iloc[0,2]
+    return {'Película':respuesta}
 
 # Query 2
 @app.get("/get_score_count/")
