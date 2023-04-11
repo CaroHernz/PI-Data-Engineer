@@ -40,8 +40,8 @@ def get_max_duration(year:int,platform:str,duration_type:str):
     return {'Película':respuesta}
 
 # Query 2
-@app.get("/get_score_count/")
-def get_score_count(platform:str, score, year):
+@app.get("/get_score_count/{platform}/{score}/{year}")
+def get_score_count(platform:str, score:float, year:int):
     query = df[(df['score'] > score) & (df['release_year'] == year)]
 
     if platform == 'amazon':
@@ -54,12 +54,12 @@ def get_score_count(platform:str, score, year):
         df_platform = query[(query['type'] == 'movie') & (query['id'].str.startswith('n'))]
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
-    
-    return df_platform['id'].count()
+    respuesta = df_platform['id'].count()
+    return {'Plataforma': platform, 'Cantidad': respuesta, 'Año': year, 'Score': score}
 
 # Query 3
-@app.get("/get_count_platform/")
-def get_count_platform(platform):
+@app.get("/get_count_platform/{platform}")
+def get_count_platform(platform:str):
     if platform == 'amazon':
         df_platform = df[(df['type'] == 'movie') & (df['id'].str.startswith('a'))]
     elif platform == 'disney':
@@ -71,11 +71,12 @@ def get_count_platform(platform):
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
     
-    return df_platform['id'].count()
+    respuesta= df_platform['id'].count()
+    return {'Plataforma': platform, 'Películas': respuesta}
 
 # Query 4
-@app.get("/get_actor/")
-def get_actor(platform,year):
+@app.get("/get_actor/{platform}/{year}")
+def get_actor(platform:str,year:int):
     if platform == 'amazon':
         filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('a'))]
     elif platform == 'disney':
@@ -90,14 +91,26 @@ def get_actor(platform,year):
     # Separo los nombres en una lista
     actor = filtro['cast'].str.split(', ')
     frecuencia = actor.explode().value_counts()
-    top = frecuencia.index[0]
+    respuesta = frecuencia.index[0]
     
-    return top
+    return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': respuesta.count()}
 
 # Query 5
+@app.get("/prod_per_county/{tipo}/{pais}/{anio}")
+def prod_per_county(tipo:str, pais:str, anio:int):
+    filtro = df[(df['type'] == tipo) & (df['country'] == pais) & (df['release_year'] == anio)]
+    respuesta = filtro['type'].count()
+    return {'País': pais, 'Año': anio, 'Tipo contenido': tipo, 'Cantidad': respuesta}    
 
 # Query 6
-@app.get("/get_contents/")
-def get_contents(rating):
+@app.get("/get_contents/{rating}")
+def get_contents(rating:str):
     filtro = df[df['rating'] == rating]
-    return filtro.shape[0]
+    respuesta = filtro.shape[0]
+    return {'rating': rating, 'contenido': respuesta}
+
+# Sistema de recomendación
+@app.get('/get_recomendation/{title}')
+def get_recomendation(title):
+    respuesta = 10
+    return {'Recomendación': respuesta}
