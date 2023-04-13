@@ -8,13 +8,14 @@ app = FastAPI(title = 'PI Data Engineer')
 # Cargo la base de datos
 df = pd.read_csv('plataformas.csv')
 
+
 # Directorio 
 @app.get("/")
-def index():
+async def index():
     return {"message":"¡Hola! ¿Cuál es tu consulta? :)"}
 
 @app.get("/contacto")
-def contacto():
+async def contacto():
     return "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"
 
 @app.get("/menu")
@@ -24,6 +25,8 @@ def menu():
 # Query 1
 @app.get("/get_max_duration/{year}/{platform}/{duration_type}")
 def get_max_duration(year:int,platform:str,duration_type:str):
+    df = pd.read_csv('plataformas.csv')
+
     if platform == 'amazon':
         filtro = df[(df['type'] == 'movie') & (df['release_year'] == year) & (df['duration_type'] == duration_type) &(df['id'].str.startswith('a'))]
     elif platform == 'disney':
@@ -37,46 +40,55 @@ def get_max_duration(year:int,platform:str,duration_type:str):
     
     title_max = filtro[filtro['duration_int'] == (filtro['duration_int'].max())]
     respuesta = title_max.iloc[0,2]
+
     return {'Película':respuesta}
 
 # Query 2
 @app.get("/get_score_count/{platform}/{score}/{year}")
-def get_score_count(platform:str, score:float, year:int):
-    query = df[(df['score'] > score) & (df['release_year'] == year)]
+def get_score_count(platform:str, score:float, year:int):    
+    df = pd.read_csv('plataformas.csv')
 
     if platform == 'amazon':
-        df_platform = query[(query['type'] == 'movie') & (query['id'].str.startswith('a'))]
+        filtro = df[(df['score'] > score) & (df['release_year'] == year) & (df['type'] == 'movie') & (df['id'].str.startswith('a'))]
     elif platform == 'disney':
-        df_platform = query[(query['type'] == 'movie') & (query['id'].str.startswith('d'))]
+        filtro = df[(df['score'] > score) & (df['release_year'] == year) & (df['type'] == 'movie') & (df['id'].str.startswith('d'))]
     elif platform == 'hulu':
-        df_platform = query[(query['type'] == 'movie') & (query['id'].str.startswith('h'))]    
+        filtro = df[(df['score'] > score) & (df['release_year'] == year) & (df['type'] == 'movie') & (df['id'].str.startswith('h'))]    
     elif platform == 'netflix':
-        df_platform = query[(query['type'] == 'movie') & (query['id'].str.startswith('n'))]
+        filtro = df[(df['score'] > score) & (df['release_year'] == year) & (df['type'] == 'movie') & (df['id'].str.startswith('n'))]
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
-    respuesta = df_platform['id'].count()
-    return {'Plataforma': platform, 'Cantidad': respuesta, 'Año': year, 'Score': score}
+    
+    respuesta = filtro['title'].count()
+    if not respuesta == 0:
+        return {'Plataforma': platform, 'Cantidad': int(respuesta), 'Año': year, 'Score': score}
+    else:
+        return ('No hay películas con ese puntaje')
 
 # Query 3
 @app.get("/get_count_platform/{platform}")
 def get_count_platform(platform:str):
+    df = pd.read_csv('plataformas.csv')
+
     if platform == 'amazon':
-        df_platform = df[(df['type'] == 'movie') & (df['id'].str.startswith('a'))]
+        filtro = df[(df['type'] == 'movie') & (df['id'].str.startswith('a'))]
     elif platform == 'disney':
-        df_platform = df[(df['type'] == 'movie') & (df['id'].str.startswith('d'))]
+        filtro = df[(df['type'] == 'movie') & (df['id'].str.startswith('d'))]
     elif platform == 'hulu':
-        df_platform = df[(df['type'] == 'movie') & (df['id'].str.startswith('h'))]    
+        filtro = df[(df['type'] == 'movie') & (df['id'].str.startswith('h'))]    
     elif platform == 'netflix':
-        df_platform = df[(df['type'] == 'movie') & (df['id'].str.startswith('n'))]
+        filtro = df[(df['type'] == 'movie') & (df['id'].str.startswith('n'))]
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
     
-    respuesta= df_platform['id'].count()
-    return {'Plataforma': platform, 'Películas': respuesta}
+    respuesta= filtro['id'].count()
+    return {'Plataforma': platform, 'Películas': int(respuesta)}
 
 # Query 4
 @app.get("/get_actor/{platform}/{year}")
-def get_actor(platform:str,year:int):
+async def get_actor(platform,year):
+    df = pd.read_csv('plataformas.csv')
+    
     if platform == 'amazon':
         filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('a'))]
     elif platform == 'disney':
@@ -88,23 +100,33 @@ def get_actor(platform:str,year:int):
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
     
-    # Separo los nombres en una lista
+    # Separo los nombres de la columna 'cast' 
     actor = filtro['cast'].str.split(', ')
-    frecuencia = actor.explode().value_counts()
-    respuesta = frecuencia.index[0]
-    
-    return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': respuesta.count()}
 
+    # Calculo la frecuencia de aparición de cada actor
+    frecuencia = actor.explode().value_counts()
+
+    # Selecciono solo un valor
+    respuesta = frecuencia
+    print(respuesta)
+    return 'holi'
+    apariciones = frecuencia[0]  
+    
+    return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': apariciones}
+    
 # Query 5
 @app.get("/prod_per_county/{tipo}/{pais}/{anio}")
 def prod_per_county(tipo:str, pais:str, anio:int):
+    df = pd.read_csv('plataformas.csv')
     filtro = df[(df['type'] == tipo) & (df['country'] == pais) & (df['release_year'] == anio)]
     respuesta = filtro['type'].count()
-    return {'País': pais, 'Año': anio, 'Tipo contenido': tipo, 'Cantidad': respuesta}    
+    
+    return {'País': pais, 'Año': anio, 'Peliculas': int(respuesta)}    
 
 # Query 6
 @app.get("/get_contents/{rating}")
 def get_contents(rating:str):
+    df = pd.read_csv('plataformas.csv')
     filtro = df[df['rating'] == rating]
     respuesta = filtro.shape[0]
     return {'rating': rating, 'contenido': respuesta}
