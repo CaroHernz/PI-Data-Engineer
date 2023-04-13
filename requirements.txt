@@ -1,3 +1,4 @@
 #Requerimientos API
-pandas
 fastapi
+uvicorn
+pandas

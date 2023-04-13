@@ -128,5 +128,5 @@ def get_contents(rating:str):
 # Sistema de recomendación
 @app.get('/get_recomendation/{title}')
 def get_recomendation(title):
-    respuesta = 10
+    respuesta = title
     return {'Recomendación': respuesta}
