@@ -100,20 +100,14 @@ async def get_actor(platform,year):
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
     
-    # Separo los nombres de la columna 'cast' 
-    actor = filtro['cast'].str.split(', ')
+    # Separo los nombres de la columna 'cast' y ordeno valores por cantidad de apariciones
+    actor = filtro['cast'].str.split(', ').explode().value_counts()
 
-    # Calculo la frecuencia de aparición de cada actor
-    frecuencia = actor.explode().value_counts()
+    respuesta = actor.index[0]
+    apariciones = actor.iloc[0]
+    return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': apariciones}   
 
-    # Selecciono solo un valor
-    respuesta = frecuencia
-    print(respuesta)
-    return 'holi'
-    apariciones = frecuencia[0]  
-    
-    return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': apariciones}
-    
+
 # Query 5
 @app.get("/prod_per_county/{tipo}/{pais}/{anio}")
 def prod_per_county(tipo:str, pais:str, anio:int):
