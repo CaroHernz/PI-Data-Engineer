@@ -1,6 +1,8 @@
 # Importo librerías necesarias:
 from fastapi import FastAPI
 import pandas as pd
+import os
+port = int(os.environ.get("PORT",10000))
 
 # Creo la APP:
 app = FastAPI(title = 'PI Data Engineer')
