@@ -1,8 +1,6 @@
 # Importo librerías necesarias:
 from fastapi import FastAPI
 import pandas as pd
-import os
-port = int(os.environ.get("PORT",10000))
 
 # Creo la APP:
 app = FastAPI(title = 'PI Data Engineer')
@@ -10,20 +8,20 @@ app = FastAPI(title = 'PI Data Engineer')
 # Cargo la base de datos
 df = pd.read_csv('plataformas.csv')
 
-
 # Directorio 
 @app.get("/")
 async def index():
-    return {"message":"¡Hola! ¿Cuál es tu consulta? :)"}
+    return {"¡Hola!":"¿Cuál es tu consulta? :)",
+    "Funciones de mi API:":
+        ("(1) get_max_duration", 
+        "(2) get_score_count",
+        "(3) get_count_platform",
+        "(4) get_actor",
+        "(5) prod_per_county ",
+        "(6) get_contents"), 
+    "Contacto": "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"}
 
-@app.get("/contacto")
-async def contacto():
-    return "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"
-
-@app.get("/menu")
-def menu():
-    return ("Funciones de mi API: (1) get_max_duration (2) get_score_count (3) get_count_platform (4) get_actor (5) No disponible (6) get_contents")
-
+    return 
 # Query 1
 @app.get("/get_max_duration/{year}/{platform}/{duration_type}")
 def get_max_duration(year:int,platform:str,duration_type:str):
