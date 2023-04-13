@@ -23,8 +23,9 @@ Por lo que acontinuación se detallara el proceso realizado desde 0:
 5. Conversión de los campos de texto a minúsculas 
 6. Conversión del campo 'duration' en los campos: 'duration_int' y 'duration_type'
 7. Normalización de algunos valores de la columna 'rating'
-8. Combinación del dataset con el promedio de rating usando el método "merge"
-9. Exportación del archivo csv final: [_plataformas.csv_](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/plataformas.csv)
+8. Reemplazar los valores nulos del campo 'cast' por 'sin información'
+9. Combinación del dataset con el promedio de rating usando el método "merge"
+10. Exportación del archivo csv final: [_plataformas.csv_](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/plataformas.csv)
 
 *El proceso de extracción, transformación y carga lo pueden encontrar en el archivo [ETL.ipynb](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/ETL.ipynb)*
 
