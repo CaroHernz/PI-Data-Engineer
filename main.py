@@ -86,33 +86,46 @@ def get_count_platform(platform:str):
 
 # Query 4
 @app.get("/get_actor/{platform}/{year}")
-async def get_actor(platform,year):
+def get_actor(platform:str,year:int):
     df = pd.read_csv('plataformas.csv')
     
     if platform == 'amazon':
         filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('a'))]
-    elif platform == 'disney':
+    if platform == 'disney':
         filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('d'))]
+    # el total de datos en campo 'cast' de la plataforma hulu son nulos, por lo que debe retornar que no hay información
     elif platform == 'hulu':
-        filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('h'))]    
+        filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('h'))]
+        respuesta = apariciones = 'sin información'
+        return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': apariciones}     
     elif platform == 'netflix':
         filtro = df[(df['release_year'] == year) & (df['id'].str.startswith('n'))]
     else:
         return ('La plataforma indicada no se encuentra o esta mal escrita. Por favor intente nuevamente :)')
+
+    # Separlo los dos datos del campo 'cast'
+    actores_sin_nulos = filtro['cast'].dropna() # elimino nulos
+    actores_str = ','.join(actores_sin_nulos.astype(str))
+    actores_lista = actores_str.split(',')
     
-    # Separo los nombres de la columna 'cast' y ordeno valores por cantidad de apariciones
-    actor = filtro['cast'].str.split(', ').explode().value_counts()
+    # Calculo la cantidad de apariciones de cada actor en la lista
+    frecuencia = {}
+    for actor in actores_lista:
+        if actor in frecuencia:
+            frecuencia[actor] +=1
+        else:
+            frecuencia[actor] = 1
+    
+    respuesta = max(frecuencia, key=frecuencia.get)
+    apariciones = frecuencia[respuesta]
 
-    respuesta = actor.index[0]
-    apariciones = actor.iloc[0]
     return {'Plataforma': platform, 'Año': year, 'Actor': respuesta, 'Apariciones': apariciones}   
-
 
 # Query 5
 @app.get("/prod_per_county/{tipo}/{pais}/{anio}")
 def prod_per_county(tipo:str, pais:str, anio:int):
     df = pd.read_csv('plataformas.csv')
-    filtro = df[(df['type'] == tipo) & (df['country'] == pais) & (df['release_year'] == anio)]
+    filtro = df[(df['type'] == tipo) & (df['country'].str.contains(pais)) & (df['release_year'] == anio)]
     respuesta = filtro['type'].count()
     
     return {'País': pais, 'Año': anio, 'Peliculas': int(respuesta)}    
