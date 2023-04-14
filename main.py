@@ -112,7 +112,7 @@ async def get_actor(platform,year):
 @app.get("/prod_per_county/{tipo}/{pais}/{anio}")
 def prod_per_county(tipo:str, pais:str, anio:int):
     df = pd.read_csv('plataformas.csv')
-    filtro = df[(df['type'] == tipo) & (df['country'] == pais) & (df['release_year'] == anio)]
+    filtro = df[(df['type'] == tipo) & (df['country'].str.contains(pais)) & (df['release_year'] == anio)]
     respuesta = filtro['type'].count()
     
     return {'País': pais, 'Año': anio, 'Peliculas': int(respuesta)}    
