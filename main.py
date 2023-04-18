@@ -1,10 +1,7 @@
 # Importo librerías necesarias:
 from fastapi import FastAPI
 import pandas as pd
-import numpy as np
-from itertools import combinations
-from sklearn.feature_extraction.text import CountVectorizer 
-from sklearn.feature_extraction.text import TfidfTransformer
+
 from surprise import Dataset, Reader, SVD
 
 # Creo la APP:
