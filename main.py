@@ -16,15 +16,10 @@ df = pd.read_csv('plataformas.csv')
 # Directorio 
 @app.get("/")
 async def index():
-    return {"¡Hola!":"¿Cuál es tu consulta? :)",
-    "Funciones de mi API:":
-        ("(1) get_max_duration", 
-        "(2) get_score_count",
-        "(3) get_count_platform",
-        "(4) get_actor",
-        "(5) prod_per_county ",
-        "(6) get_contents"), 
-    "Contacto": "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"}
+    return {"¡Hola!":"¿Cuál es tu consulta? :)"}
+@app.get("/")
+async def contact():
+    return {"Contacto": "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"}
  
 # Query 1
 @app.get("/get_max_duration/{year}/{platform}/{duration_type}")
@@ -167,9 +162,6 @@ def get_recomendation(title:str):
         prediccion.append((uid, model.predict(uid,movie_inner_id).est))
     
     prediccion.sort(key=lambda x: x[1], reverse=True)
-    respuesta = [items[0] for items in prediccion[:5]]
-
-    return {'Recomendación': respuesta}
 
     respuesta = []
     for item in prediccion[:5]:
