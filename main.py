@@ -1,6 +1,11 @@
 # Importo librerías necesarias:
 from fastapi import FastAPI
 import pandas as pd
+import numpy as np
+from itertools import combinations
+from sklearn.feature_extraction.text import CountVectorizer 
+from sklearn.feature_extraction.text import TfidfTransformer
+from surprise import Dataset, Reader, SVD
 
 # Creo la APP:
 app = FastAPI(title = 'PI Data Engineer')
@@ -20,8 +25,7 @@ async def index():
         "(5) prod_per_county ",
         "(6) get_contents"), 
     "Contacto": "Linkedin: https://www.linkedin.com/in/carolinahernandezbarra / Github: CaroHernz"}
-
-    return 
+ 
 # Query 1
 @app.get("/get_max_duration/{year}/{platform}/{duration_type}")
 def get_max_duration(year:int,platform:str,duration_type:str):
@@ -128,7 +132,7 @@ def prod_per_county(tipo:str, pais:str, anio:int):
     filtro = df[(df['type'] == tipo) & (df['country'].str.contains(pais)) & (df['release_year'] == anio)]
     respuesta = filtro['type'].count()
     
-    return {'País': pais, 'Año': anio, 'Peliculas': int(respuesta)}    
+    return {'País': pais, 'Año': anio, 'Contenido': int(respuesta)}    
 
 # Query 6
 @app.get("/get_contents/{rating}")
@@ -138,8 +142,39 @@ def get_contents(rating:str):
     respuesta = filtro.shape[0]
     return {'rating': rating, 'contenido': respuesta}
 
-# Sistema de recomendación
-# @app.get('/get_recomendation/{title}')
-# def get_recomendation(title):
-#     respuesta = title
-#     return {'Recomendación': respuesta}
+#Sistema de recomendación:
+# cargo los datos y defino reader
+df = pd.read_parquet('dataset_ml.parquet')
+reader = Reader(rating_scale=(1,5))
+data = Dataset.load_from_df(df[['userId','id','score']],reader)
+
+# Entreno el modelo de filtrado colaborativo
+model = SVD()
+trainset = data.build_full_trainset()
+model.fit(trainset)
+
+#Query 7
+@app.get('/get_recomendation/{title}')
+def get_recomendation(title:str):
+    movie_id = df[df['title']==title]['id'].iloc[0]
+    movie_inner_id = trainset.to_inner_iid(movie_id)
+    prediccion = []
+
+    if movie_id is None:
+        return 'Esta pelicula no se encuentra, intente con otro titulo'
+
+    for uid in range(trainset.n_users):
+        prediccion.append((uid, model.predict(uid,movie_inner_id).est))
+    
+    prediccion.sort(key=lambda x: x[1], reverse=True)
+    respuesta = [items[0] for items in prediccion[:5]]
+
+    return {'Recomendación': respuesta}
+
+    respuesta = []
+    for item in prediccion[:5]:
+        titulos = df[df['id']==item[0]]
+        pelicula = titulos['title'].iloc[0]
+        respuesta.append(pelicula)
+
+    return {'Recomendación': respuesta}
