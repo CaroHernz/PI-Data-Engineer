@@ -12,7 +12,7 @@ El ciclo de vida de un proyecto de Machine Learning contempla desde el tratamien
 
 Por lo que acontinuación se detallara el proceso realizado desde 0:
 
-## Proceso ETL 
+### Proceso ETL 
 **_Extracción de Datos_**: trabajaremos con los archivos(csv) provistos de la carpeta [Datasets](https://github.com/CaroHernz/PI-Data-Engineer/tree/main/Datasets)
 
 **_Transformación de Datos_**: los datos entregados son procesados, según exigencias, de la siguiente manera:
@@ -41,3 +41,11 @@ Creamos 6 funciones:
 
 **Deployment: https://plataformas-9gqb.onrender.com/**
 
+### Análisis Exploratorio de los Datos (EDA)
+Corresponde investigar las relaciones entre las variables del dataset. Identificar outliers o anomalías y ver si hay algún patrón interesante a explorar en un análisis.
+
+### Sistema de Recomendación
+A partir del EDA realizado podemos entender los datos y proseguimos a entrenar nuestro modelo de Machine Learning para desarrollar un sistema de recomendacion de películas.
+Éste consiste en recomendar películas basándose en películas similares en terminos de puntaje (score), devolviendo un listado de 5 peliculas y su puntaje.
+
+**Video: **
