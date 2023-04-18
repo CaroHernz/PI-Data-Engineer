@@ -4,4 +4,4 @@ uvicorn
 pandas
 numpy
 scikit-learn
-seaborn
+surprise
