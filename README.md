@@ -39,14 +39,20 @@ Para disponibilizar los datos a los usuarios es que usando el framework _FastAPI
 * **prod_per_county:** Cantidad de contenidos que se publicó por país y año
 * **get_contents:** Cantidad total de contenidos según rating
 
+*El proceso de desarrollo de estas funciones se encuentra en el archivo [Desarrollo API.ipynb](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/Desarrollo%20API.ipynb)*
+
 **Deployment: https://plataformas-9gqb.onrender.com/docs**
 
 ### Análisis Exploratorio de los Datos (EDA)
 Corresponde investigar las relaciones entre las variables del dataset. Identificar outliers o anomalías y ver si hay algún patrón interesante a explorar en un análisis. Para nuestro sistema de recomendación serán de utilidad las columnas de usuario, title, id y score(puntuación dada por los usuarios).
 
+*Este análisis se encuentra en el archivo [EDA.ipynb](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/EDA.ipynb)*
+
 ### Sistema de Recomendación
 A partir del EDA realizado podemos entender los datos y proseguimos a entrenar nuestro modelo de Machine Learning para desarrollar un sistema de recomendacion de películas.
 Éste consiste en recomendar películas basándose en películas similares en terminos de puntaje (score), devolviendo un listado de 5 peliculas y su puntaje.
 Para crearlo fue utilizada la _Descomposición en Valores Singulares (SVD)_ para el modelado y entrenamiento y la _cross validation_ (validación cruzada) para su evaluación.
+
+*El modelado de machine learning esta contenido en el archivo [Modelo ML.ipynb](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/Modelo_ML.ipynb)*
 
 **Video: **
