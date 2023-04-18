@@ -55,4 +55,4 @@ Para crearlo fue utilizada la _Descomposición en Valores Singulares (SVD)_ para
 
 *El modelado de machine learning esta contenido en el archivo [Modelo ML.ipynb](https://github.com/CaroHernz/PI-Data-Engineer/blob/main/Modelo_ML.ipynb)*
 
-**Video: **
+**[Video](https://eduipchile-my.sharepoint.com/:v:/g/personal/carolina_hernandez7_edu_ipchile_cl/Ed68eEEYiodCt-kM8mrT180BsSW5o6BatphBZQXlXQ9-Jg?e=Cc4QIk)**
